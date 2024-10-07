@@ -28,16 +28,7 @@ public class MenuFactController {
     public void displayBill() {
         view.displayBill(bill);  // Pass the model to the view
     }
-
-    public void addPlatToBill(int code, int quantity) {
-        IPlat plat = menu.getPlatByCode(code);
-        if (plat != null) {
-            bill.addPlat(plat, quantity);
-        } else {
-            System.out.println("Plat not found");
-        }
-    }
-
+    
     public void run() {
         displayWelcomeMessage();
         displayMenu();

@@ -1,96 +1,113 @@
-@startuml improved
+@startuml menuFact
 
-' Définition des états de la Facture
-enum EtatFacture {
+skinparam class {
+    BackgroundColor<<MVC>> LightBlue
+    BackgroundColor<<Factory>> LightGreen
+    BorderColor black
+    ArrowColor black
+    ClassFontColor black
+}
+
+' // Controller Class (MVC)
+class MenuFactController <<MVC>> {
+    - Menu menu
+    - Bill bill
+    - MenuFactView view
+    + MenuFactController(Menu, Bill, MenuFactView)
+    + displayWelcomeMessage()
+    + displayMenu()
+    + displayBill()
+    + run()
+}
+
+' // View Class (MVC)
+class MenuFactView <<MVC>> {
+    + displayMenu(Menu)
+    + displayBill(Bill)
+    + showWelcomeMessage()
+}
+
+' // Models
+class Menu {
+    - String description
+    - List<IPlat> plats
+    + addPlat(IPlat plat)
+    + removePlat(IPlat plat)
+    + getPlatByCode(int code): IPlat
+}
+
+class Bill {
+    - LocalDateTime date
+    - BillState state
+    - Client client
+    - Map<IPlat, Integer> plats
+    + addPlat(IPlat, int)
+    + removePlat(int)
+    + modifyBill(int, int)
+    + getTotal(): double
+}
+
+interface IPlat {
+    + getCode(): int
+    + getDescription(): String
+    + getPrix(): double
+}
+
+class Plat {
+    - int code
+    - String description
+    - double prix
+    + getCode(): int
+    + getDescription(): String
+    + getPrix(): double
+}
+
+class KidsPlat {
+    - double proportion
+    + KidsPlat(int, String, double, double)
+}
+
+class HealthyPlat {
+    - double calories
+    - double cholesterol
+    - double fat
+    + HealthyPlat(int, String, double, double, double, double)
+}
+
+class Client {
+    - int idClient
+    - String name
+    + Client(int, String)
+}
+
+enum BillState {
     OPEN
     CLOSED
     PAYED
 }
 
-' Interface pour les Plats
-interface IPlat {
-    +getCode(): int
-    +getDescription(): String
-    +getPrix(): double
-    +toString(): String
+' // Factory Pattern (Factory)
+class PlatFactory <<Factory>> {
+    + createPlat(PlatType, int, String, double, double...): Plat
 }
 
-' Classe Plat implémente IPlat
-class Plat implements IPlat {
-    -code: int
-    -description: String
-    -prix: double
-    +Plat(int, String, double)
-    +getCode(): int
-    +getDescription(): String
-    +getPrix(): double
-    +toString(): String
-} 
-
-' Classe PlatEnfant hérite de Plat
-class PlatEnfant extends Plat {
-    -proportion: double
-    +PlatEnfant(int, String, double, double)
-    +getProportion(): double
-    +toString(): String
+enum PlatType {
+    REGULAR
+    KIDS
+    HEALTHY
 }
 
-' Classe healthyPlat hérite de Plat
-class healthyPlat extends Plat {
-    -cal: double
-    -chol: double
-    -gras: double
-    +healthyPlat(int, String, double, double, double)
-    +getCal(): double
-    +getChol(): double
-    +getGras(): double
-    +toString(): String
-}
-
-' Classe Menu avec Singleton
-class Menu {
-    - description: String
-    - plats: List<IPlat>
-    - static instance: Menu
-    +Menu()
-    +ajouterPlat(IPlat): void
-    +getPlats(): List<IPlat>
-    +getPlatParCode(int): IPlat
-    +toString(): String
-    +static obtenirInstance(): Menu
-}
-
-' Classe Client
-class Client {
-    -idClient: int
-    -nom: String
-    +Client(int, String)
-    +getNom(): String
-    +getId(): int
-    +setNom(String): void
-    +setId(int): void
-    +toString(): String
-}
-
-' Classe Facture
-class Facture {
-    -date: Date
-    -state: EtatFacture
-    -client: Client
-    -plats: HashMap<IPlat, int>
-    +Facture(Client)
-    +ajouterPlat(IPlat): void
-    +modifierFacture(String, int)
-    +getTotal(): double
-    +fermer(): void
-    +regler(): void
-    +reOuvrire(): void
-    +toString(): String
-}
-
-' Associations
-Menu "1" o-- "0..*" IPlat : contient
-Client "1" o-- "0..*" Facture : concerne
-Facture  --  EtatFacture
-
+' Associations and cardinalities
+MenuFactController "1" -- "1" MenuFactView : "control"
+MenuFactView "1" -- "*" Menu : "display"
+MenuFactView "1" -- "*" Bill : "display"
+Menu "1" o-- "0..*" IPlat
+Plat ..> IPlat: "implement"
+Bill "1" o-- "0..*" IPlat
+Bill "1" o-- "1" Client
+PlatFactory "1" --> "1" Plat : "create"
+KidsPlat --|> Plat
+HealthyPlat --|> Plat
+Bill -- BillState : "has"
+Plat -- PlatType : "has"
 @enduml
