@@ -1,27 +1,23 @@
+// MenuFactView.java
 package com.restaurant.view;
 
-import com.restaurant.model.*;
+import com.restaurant.model.Bill;
+import com.restaurant.model.Menu;
+import com.restaurant.model.IPlat;
 
 public class MenuFactView {
 
-    private Menu menu;
-    private Bill bill;
     private final String wlcMessage = "Welcome to the MenuFact Application!";
 
-    public MenuFactView(Menu menu, Bill bill) {
-        this.menu = menu;
-        this.bill = bill;
-    }
-
-    public void displayMenu() {
+    public void displayMenu(Menu menu) {
         System.out.println("=== Menu: ===");
         for (IPlat plat : menu.getPlats()) {
             System.out.println(plat);
         }
     }
 
-    public void displayBill() {
-        System.out.println("Bill Details:");
+    public void displayBill(Bill bill) {
+        System.out.println("=== Bill: ===");
         System.out.println(bill);
     }
 

@@ -1,5 +1,13 @@
+// HealthyPlat.java
 package com.restaurant.model;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString(callSuper = true)
 public class HealthyPlat extends Plat {
     private double calories;
     private double cholesterol;
@@ -10,29 +18,5 @@ public class HealthyPlat extends Plat {
         this.calories = calories;
         this.cholesterol = cholesterol;
         this.fat = fat;
-    }
-
-    public double getCalories() {
-        return calories;
-    }
-
-    public double getCholesterol() {
-        return cholesterol;
-    }
-
-    public double getFat() {
-        return fat;
-    }
-
-    @Override
-    public String toString() {
-        return "healthyPlat{" +
-                "code=" + getCode() +
-                ", description='" + getDescription() + '\'' +
-                ", prix=" + getPrix() +
-                ", calories=" + calories +
-                ", cholesterol=" + cholesterol +
-                ", fat=" + fat +
-                '}';
     }
 }

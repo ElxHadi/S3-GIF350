@@ -1,5 +1,7 @@
 package com.restaurant.model;
 
+import com.restaurant.util.BillState;
+
 public class PlatState {
     private BillState state;
 
