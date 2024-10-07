@@ -1,0 +1,96 @@
+@startuml improved
+
+' Définition des états de la Facture
+enum EtatFacture {
+    OPEN
+    CLOSED
+    PAYED
+}
+
+' Interface pour les Plats
+interface IPlat {
+    +getCode(): int
+    +getDescription(): String
+    +getPrix(): double
+    +toString(): String
+}
+
+' Classe Plat implémente IPlat
+class Plat implements IPlat {
+    -code: int
+    -description: String
+    -prix: double
+    +Plat(int, String, double)
+    +getCode(): int
+    +getDescription(): String
+    +getPrix(): double
+    +toString(): String
+} 
+
+' Classe PlatEnfant hérite de Plat
+class PlatEnfant extends Plat {
+    -proportion: double
+    +PlatEnfant(int, String, double, double)
+    +getProportion(): double
+    +toString(): String
+}
+
+' Classe healthyPlat hérite de Plat
+class healthyPlat extends Plat {
+    -cal: double
+    -chol: double
+    -gras: double
+    +healthyPlat(int, String, double, double, double)
+    +getCal(): double
+    +getChol(): double
+    +getGras(): double
+    +toString(): String
+}
+
+' Classe Menu avec Singleton
+class Menu {
+    - description: String
+    - plats: List<IPlat>
+    - static instance: Menu
+    +Menu()
+    +ajouterPlat(IPlat): void
+    +getPlats(): List<IPlat>
+    +getPlatParCode(int): IPlat
+    +toString(): String
+    +static obtenirInstance(): Menu
+}
+
+' Classe Client
+class Client {
+    -idClient: int
+    -nom: String
+    +Client(int, String)
+    +getNom(): String
+    +getId(): int
+    +setNom(String): void
+    +setId(int): void
+    +toString(): String
+}
+
+' Classe Facture
+class Facture {
+    -date: Date
+    -state: EtatFacture
+    -client: Client
+    -plats: HashMap<IPlat, int>
+    +Facture(Client)
+    +ajouterPlat(IPlat): void
+    +modifierFacture(String, int)
+    +getTotal(): double
+    +fermer(): void
+    +regler(): void
+    +reOuvrire(): void
+    +toString(): String
+}
+
+' Associations
+Menu "1" o-- "0..*" IPlat : contient
+Client "1" o-- "0..*" Facture : concerne
+Facture  --  EtatFacture
+
+@enduml
