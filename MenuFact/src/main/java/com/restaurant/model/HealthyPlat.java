@@ -4,7 +4,6 @@ package com.restaurant.model;
 import java.util.HashMap;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter

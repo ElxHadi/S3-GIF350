@@ -2,7 +2,6 @@
 package com.restaurant.controller;
 
 import com.restaurant.model.Bill;
-import com.restaurant.model.Plat;
 import com.restaurant.model.Menu;
 import com.restaurant.view.MenuFactView;
 

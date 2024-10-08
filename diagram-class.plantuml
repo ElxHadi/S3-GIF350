@@ -10,10 +10,11 @@ skinparam class {
 
 ' // Controller Class (MVC)
 class MenuFactController <<MVC>> {
-    - Menu menu : Menu
-    - Bill bill : Bill
-    - MenuFactView view : MenuFactView
-    + MenuFactController(Menu, Bill, MenuFactView)
+    - menu : Menu
+    - bill : Bill
+    - view : MenuFactView
+    - inventory : Inventory
+    + MenuFactController(menu : Menu, bill : Bill, view : MenuFactView, inventory : Inventory)
     + displayWelcomeMessage() : void
     + displayMenu() : void
     + displayBill() : void
@@ -29,8 +30,8 @@ class MenuFactView <<MVC>> {
 
 ' // Models
 class Menu {
-    - String description : String
-    - List<Plat> plats : List<Plat>
+    - description : String
+    - plats : List<Plat>
     + addPlat(plat : Plat) : void
     + removePlat(plat : Plat) : void
     + getPlatByCode(code : int) : Plat
@@ -40,17 +41,17 @@ class Bill {
     - LocalDateTime date : LocalDateTime
     - BillState state : BillState
     - Client client : Client
-    - Map<Plat, Integer> plats : Map<Plat, Integer>
+    - platQuantities : Map<Plat, Integer>
     + addPlat(plat : Plat, quantity : int) : void
-    + removePlat(index : int) : void
-    + modifyBill(index : int, quantity : int) : void
+    + removePlat(plat : Plat) : void
+    + modifyBill(plat : Plat, quantity : int) : void
     + getTotal() : double
 }
 
 class Plat {
-    - int code : int
-    - String description : String
-    - Map<Ingredient, Double> ingredients : Map<Ingredient, Double>
+    - code : int
+    - description : String
+    - ingredients : Map<Ingredient, Double>
     + getCode() : int
     + getDescription() : String
     + getIngredients() : Map<Ingredient, Double>
@@ -58,76 +59,84 @@ class Plat {
 }
 
 class KidsPlat {
-    - double proportion : double
-    + KidsPlat(int, String, double, double) 
+    - proportion : double
+    + KidsPlat(code : int, description : String, proportion : double) 
     + getPlatPrice() : double @Override
 }
 
 class HealthyPlat {
-    - double calories : double
-    - double cholesterol : double
-    - double fat : double
-    + HealthyPlat(int, String, double, double, double, double)
+    - calories : double
+    - cholesterol : double
+    - fat : double
+    + HealthyPlat(code : int, description : String, calories : double, cholesterol : double, fat : double)
 }
 
 class Client {
-    - int idClient : int
-    - String name : String
-    + Client(int, String)
+    - id : int
+    - name : String
+    + Client(id : int, name : String)
 }
 
 class Ingredient {
-    - int code : int
-    - String name : String
-    - IngredientType type : IngredientType
-    - double pricePerUnit : double
-    - IngredientUnit unit : IngredientUnit
+    - code : int
+    - name : String
+    - type : IngredientType
+    - pricePerUnit : double
+    - unit : IngredientUnit
+}
+
+class Inventory {
+    - availableIngredients : Map<Ingredient, Integer>
+    + addIngredient(ingredient : Ingredient, quantity : int) : void
+    + removeIngredient(ingredient : Ingredient, quantity : int) : void
+    + modifyIngredientQuantity(ingredient : Ingredient, quantity : int) : void
+    + getAvailableQuantity(ingredient : Ingredient) : int
+    + getIngredientsList() : Map<Ingredient, Integer>
 }
 
 enum IngredientType {
-    SOLID
+    SOLID,
     LIQUID
 }
 
 enum IngredientUnit {
-    KG
-    G
-    MG
-    L
+    KG,
+    G,
+    MG,
+    L,
     ML
 }
 
 enum BillState {
-    OPEN
-    CLOSED
-    PAYED
+    OPEN,
+    CLOSED,
+    PAID
 }
 
 ' // Factory Pattern (Factory)
 class PlatFactory <<Factory>> {
-    + createPlat(platType : PlatType, code : int, description : String, ...additionalParams : double...) : Plat
+    + createPlat(platType : PlatType, code : int, description : String, additionalParams : double...) : Plat
 }
 
 enum PlatType {
-    REGULAR
-    KIDS
+    REGULAR,
+    KIDS,
     HEALTHY
 }
 
 ' Associations and cardinalities
-MenuFactController "1" -- "1" MenuFactView : "control"
-MenuFactView "1" -- "*" Menu : "display"
-MenuFactView "1" -- "*" Bill : "display"
-Menu "1" o-- "0..*" Plat
-Bill "1" o-- "0..*" Plat
-Bill "1" o-- "1" Client
-PlatFactory "1" --> "1" Plat : "create"
+MenuFactController "1" -- "1" MenuFactView : "controls"
+MenuFactView "1" -- "*" Menu : "displays"
+MenuFactView "1" -- "*" Bill : "displays"
+Menu "1" o-- "0..*" Plat : "contains"
+Bill "1" o-- "0..*" Plat : "contains"
+Bill "1" o-- "1" Client : "belongs to"
+PlatFactory "1" --> "1" Plat : "creates"
 PlatFactory ..> PlatType : "uses"
 KidsPlat --|> Plat
 HealthyPlat --|> Plat
 Bill -- BillState : "has"
-Plat "1..*" o-- "0..*" Ingredient
-Ingredient "1" -- IngredientType
-Ingredient "1" -- IngredientUnit
+Inventory "1" -- "0..*" Ingredient : "contains"
+Plat "1..*" o-- "0..*" Ingredient : "uses"
 
 @enduml
