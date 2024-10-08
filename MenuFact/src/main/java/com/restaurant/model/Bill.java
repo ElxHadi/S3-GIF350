@@ -6,25 +6,23 @@ import java.util.HashMap;
 import com.restaurant.util.BillState;
 import lombok.*;
 
-
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public class Bill {
-    private LocalDateTime date;
-    private BillState state;
-    private Client client;
-    private HashMap<IPlat, Integer> plats;
+    private LocalDateTime date = LocalDateTime.now();
+    private BillState state = BillState.CLOSED;
+    private Client client = new Client(0, "");
+    private HashMap<Plat, Integer> plats = new HashMap<>();
 
-    public Bill(Client client) {
-        this.client = client;
-        this.plats = new HashMap<>();
+    public Bill() {
         this.date = LocalDateTime.now();
-        this.state = BillState.OPEN;
-    }
+        this.state = BillState.CLOSED;
+        this.client = new Client(); // Default Client
+        this.plats = new HashMap<>(); // Initialize the HashMap
+    }    
 
-    public void addPlat(IPlat plat, int quantity) {
+    public void addPlat(Plat plat, int quantity) {
         if (plat == null) {
             return;
         }
@@ -39,7 +37,7 @@ public class Bill {
         if (newQuantity <= 0) {
             return;
         }
-        for (HashMap.Entry<IPlat, Integer> entry : plats.entrySet()) {
+        for (HashMap.Entry<Plat, Integer> entry : plats.entrySet()) {
             if (entry.getKey().getCode() == code) {
                 plats.put(entry.getKey(), newQuantity);
                 return;
@@ -49,8 +47,8 @@ public class Bill {
 
     public double getTotal() {
         double total = 0;
-        for (HashMap.Entry<IPlat, Integer> entry : plats.entrySet()) {
-            total += entry.getKey().getPrix() * entry.getValue();
+        for (HashMap.Entry<Plat, Integer> entry : plats.entrySet()) {
+            total += entry.getKey().getPlatPrice() * entry.getValue();
         }
         return total;
     }
@@ -69,18 +67,19 @@ public class Bill {
         }
     }
 
+    @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         StringBuilder platsDescription = new StringBuilder();
-        for (HashMap.Entry<IPlat, Integer> entry : plats.entrySet()) {
-            platsDescription.append("\t\t" + entry.getKey().getDescription()) // Assuming IPlat has
-                                                                              // a getNom() method
-                    .append(": ").append(entry.getValue()).append(" @ ")
-                    .append(entry.getKey().getPrix()).append(" each\n");
+        for (HashMap.Entry<Plat, Integer> entry : plats.entrySet()) {
+            platsDescription.append("\t\t").append(entry.getKey().getDescription()).append(": ")
+                    .append(entry.getValue()).append(" @ ").append(entry.getKey().getPlatPrice())
+                    .append(" each\n");
         }
 
         return "Bill {\n" + "\tDate: " + date.format(formatter) + "\n" + "\tState: " + state + "\n"
                 + "\tClient: " + client + "\n" + "\tPlats: \n" + platsDescription.toString()
                 + "\tTotal: $" + getTotal() + "\n" + '}';
     }
+
 }

@@ -10,74 +10,91 @@ skinparam class {
 
 ' // Controller Class (MVC)
 class MenuFactController <<MVC>> {
-    - Menu menu
-    - Bill bill
-    - MenuFactView view
+    - Menu menu : Menu
+    - Bill bill : Bill
+    - MenuFactView view : MenuFactView
     + MenuFactController(Menu, Bill, MenuFactView)
-    + displayWelcomeMessage()
-    + displayMenu()
-    + displayBill()
-    + run()
+    + displayWelcomeMessage() : void
+    + displayMenu() : void
+    + displayBill() : void
+    + run() : void
 }
 
 ' // View Class (MVC)
 class MenuFactView <<MVC>> {
-    + displayMenu(Menu)
-    + displayBill(Bill)
-    + showWelcomeMessage()
+    + displayMenu(menu : Menu) : void
+    + displayBill(bill : Bill) : void
+    + showWelcomeMessage() : void
 }
 
 ' // Models
 class Menu {
-    - String description
-    - List<IPlat> plats
-    + addPlat(IPlat plat)
-    + removePlat(IPlat plat)
-    + getPlatByCode(int code): IPlat
+    - String description : String
+    - List<Plat> plats : List<Plat>
+    + addPlat(plat : Plat) : void
+    + removePlat(plat : Plat) : void
+    + getPlatByCode(code : int) : Plat
 }
 
 class Bill {
-    - LocalDateTime date
-    - BillState state
-    - Client client
-    - Map<IPlat, Integer> plats
-    + addPlat(IPlat, int)
-    + removePlat(int)
-    + modifyBill(int, int)
-    + getTotal(): double
-}
-
-interface IPlat {
-    + getCode(): int
-    + getDescription(): String
-    + getPrix(): double
+    - LocalDateTime date : LocalDateTime
+    - BillState state : BillState
+    - Client client : Client
+    - Map<Plat, Integer> plats : Map<Plat, Integer>
+    + addPlat(plat : Plat, quantity : int) : void
+    + removePlat(index : int) : void
+    + modifyBill(index : int, quantity : int) : void
+    + getTotal() : double
 }
 
 class Plat {
-    - int code
-    - String description
-    - double prix
-    + getCode(): int
-    + getDescription(): String
-    + getPrix(): double
+    - int code : int
+    - String description : String
+    - Map<Ingredient, Double> ingredients : Map<Ingredient, Double>
+    + getCode() : int
+    + getDescription() : String
+    + getIngredients() : Map<Ingredient, Double>
+    + getPlatPrice() : double
 }
 
 class KidsPlat {
-    - double proportion
-    + KidsPlat(int, String, double, double)
+    - double proportion : double
+    + KidsPlat(int, String, double, double) 
+    + getPlatPrice() : double @Override
 }
 
 class HealthyPlat {
-    - double calories
-    - double cholesterol
-    - double fat
+    - double calories : double
+    - double cholesterol : double
+    - double fat : double
     + HealthyPlat(int, String, double, double, double, double)
 }
 
 class Client {
-    - int idClient
-    - String name
+    - int idClient : int
+    - String name : String
     + Client(int, String)
+}
+
+class Ingredient {
+    - int code : int
+    - String name : String
+    - IngredientType type : IngredientType
+    - double pricePerUnit : double
+    - IngredientUnit unit : IngredientUnit
+}
+
+enum IngredientType {
+    SOLID
+    LIQUID
+}
+
+enum IngredientUnit {
+    KG
+    G
+    MG
+    L
+    ML
 }
 
 enum BillState {
@@ -88,7 +105,7 @@ enum BillState {
 
 ' // Factory Pattern (Factory)
 class PlatFactory <<Factory>> {
-    + createPlat(PlatType, int, String, double, double...): Plat
+    + createPlat(platType : PlatType, code : int, description : String, ...additionalParams : double...) : Plat
 }
 
 enum PlatType {
@@ -101,13 +118,16 @@ enum PlatType {
 MenuFactController "1" -- "1" MenuFactView : "control"
 MenuFactView "1" -- "*" Menu : "display"
 MenuFactView "1" -- "*" Bill : "display"
-Menu "1" o-- "0..*" IPlat
-Plat ..> IPlat: "implement"
-Bill "1" o-- "0..*" IPlat
+Menu "1" o-- "0..*" Plat
+Bill "1" o-- "0..*" Plat
 Bill "1" o-- "1" Client
 PlatFactory "1" --> "1" Plat : "create"
+PlatFactory ..> PlatType : "uses"
 KidsPlat --|> Plat
 HealthyPlat --|> Plat
 Bill -- BillState : "has"
-Plat -- PlatType : "has"
+Plat "1..*" o-- "0..*" Ingredient
+Ingredient "1" -- IngredientType
+Ingredient "1" -- IngredientUnit
+
 @enduml

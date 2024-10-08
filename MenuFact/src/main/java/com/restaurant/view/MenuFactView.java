@@ -3,7 +3,7 @@ package com.restaurant.view;
 
 import com.restaurant.model.Bill;
 import com.restaurant.model.Menu;
-import com.restaurant.model.IPlat;
+import com.restaurant.model.Plat;
 
 public class MenuFactView {
 
@@ -11,7 +11,7 @@ public class MenuFactView {
 
     public void displayMenu(Menu menu) {
         System.out.println("=== Menu: ===");
-        for (IPlat plat : menu.getPlats()) {
+        for (Plat plat : menu.getPlats()) {
             System.out.println(plat);
         }
     }
