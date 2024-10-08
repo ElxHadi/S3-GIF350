@@ -2,6 +2,7 @@
 package com.restaurant.controller;
 
 import com.restaurant.model.Bill;
+import com.restaurant.model.Client;
 import com.restaurant.model.Menu;
 import com.restaurant.view.MenuFactView;
 
@@ -9,6 +10,12 @@ public class MenuFactController {
     private final MenuFactView view;
     private final Menu menu;
     private final Bill bill;
+
+    public MenuFactController() {
+        this.view = new MenuFactView();
+        this.menu = new Menu();
+        this.bill = new Bill(new Client());
+    }
 
     public MenuFactController(Menu menu, Bill bill, MenuFactView view) {
         this.view = view;
@@ -21,13 +28,13 @@ public class MenuFactController {
     }
 
     public void displayMenu() {
-        view.displayMenu(menu);  // Pass the model to the view
+        view.displayMenu(menu); // Pass the model to the view
     }
 
     public void displayBill() {
-        view.displayBill(bill);  // Pass the model to the view
+        view.displayBill(bill); // Pass the model to the view
     }
-    
+
     public void run() {
         displayWelcomeMessage();
         displayMenu();

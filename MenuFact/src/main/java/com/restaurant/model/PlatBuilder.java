@@ -1,19 +1,19 @@
+// PlatBuilder.java
 package com.restaurant.model;
 
+import com.restaurant.exception.InsufficientStockException;
 import com.restaurant.util.PlatType;
-
 import java.util.HashMap;
 
 public class PlatBuilder {
     private PlatType type;
     private int code;
     private String description;
-    private HashMap<Ingredient, Double> ingredients;
+    private HashMap<Ingredient, Double> ingredients = new HashMap<>();
     private double[] extraParams;
 
     public PlatBuilder(PlatType type) {
         this.type = type;
-        this.ingredients = new HashMap<>();
     }
 
     public PlatBuilder setCode(int code) {
@@ -27,7 +27,18 @@ public class PlatBuilder {
     }
 
     public PlatBuilder addIngredient(Ingredient ingredient, double quantity) {
+        Inventory inventory = Inventory.getInstance();
+
+        // Check availability in inventory
+        if (!inventory.checkAvailability(ingredient, quantity)) {
+            throw new InsufficientStockException("Not enough stock for ingredient: " + ingredient.getName());
+        }
+
+        // Add the ingredient to the plat
         this.ingredients.put(ingredient, quantity);
+        // Update the inventory by reducing the stock
+        inventory.removeIngredient(ingredient, quantity);
+
         return this;
     }
 
@@ -46,7 +57,8 @@ public class PlatBuilder {
                 }
             case HEALTHY:
                 if (extraParams.length >= 3) {
-                    return new HealthyPlat(code, description, ingredients, extraParams[0], extraParams[1], extraParams[2]);
+                    return new HealthyPlat(code, description, ingredients, extraParams[0],
+                            extraParams[1], extraParams[2]);
                 } else {
                     throw new IllegalArgumentException("Missing parameters for HealthyPlat");
                 }

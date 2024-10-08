@@ -50,7 +50,9 @@ public class Menu {
 
     @Override
     public String toString() {
-        return "Menu {" + "Description: '" + description + '\'' + ", Plats: " + plats + '}';
+        StringBuilder menuStr = new StringBuilder("Menu: " + description + "\n");
+        plats.forEach(plat -> menuStr.append(plat.toString()).append("\n"));
+        return menuStr.toString();
     }
 
 }

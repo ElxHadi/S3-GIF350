@@ -5,9 +5,9 @@ import com.restaurant.util.IngredientType;
 import com.restaurant.util.IngredientUnit;
 import lombok.*;
 
+// Lombok annotations can remain for other purposes, such as getters and setters.
 @Getter
 @Setter
-@AllArgsConstructor
 public class Ingredient {
     private int code;
     private String name;
@@ -15,19 +15,18 @@ public class Ingredient {
     private double pricePerUnit;
     private IngredientUnit unit; // Enum for kg, g, mg, L, ml
 
-    public Ingredient() {
-        this.code = 0; // Default code
-        this.name = ""; // Default name
-        this.type = IngredientType.SOLID; // Default type
-        this.pricePerUnit = 0.0; // Default price
-        this.unit = IngredientUnit.G; // Default unit
+    // Private constructor to restrict instantiation
+    public Ingredient(int code, String name, IngredientType type, double pricePerUnit, IngredientUnit unit) {
+        this.code = code;
+        this.name = name;
+        this.type = type;
+        this.pricePerUnit = pricePerUnit;
+        this.unit = unit;
     }
 
     @Override
     public String toString() {
-        return "Ingredient {" + "Code: " + code + ", Name: '" + name + '\'' + ", Type: " + type
-                + ", Price Per Unit: " + pricePerUnit + ", Unit: " + unit + '}';
+        return String.format("Ingredient { Code: %d, Name: '%s', Price: %.2f, Unit: %s, Type: %s }", 
+            code, name, pricePerUnit, unit, type);
     }
-
-
 }

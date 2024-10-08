@@ -15,11 +15,11 @@ public class Plat {
     private String description;
     private HashMap<Ingredient, Double> ingredients = new HashMap<>();
 
-    public Plat() {
-        this.code = 0;
-        this.description = "";
-        this.ingredients = new HashMap<>();
-    }
+    // private Plat() {
+    //     this.code = 0;
+    //     this.description = "";
+    //     this.ingredients = new HashMap<>();
+    // }
 
     public void addIngredient(Ingredient ingredient, double quantity) {
         ingredients.put(ingredient, quantity);

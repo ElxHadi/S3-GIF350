@@ -24,9 +24,7 @@ public class KidsPlat extends Plat {
     // Calculate total ingredient cost
     @Override
     public String toString() {
-
-        return "Plat {" + "Code: " + super.getCode() + ", Description: '" + super.getDescription()
-                + '\'' + ", platPrice: " + getPlatPrice() + ", Ingredients: "
-                + super.getIngredients() + '}';
+        return String.format("KidsPlat { Code: %d, Description: '%s', Price: %.2f, Ingredients: %s }", 
+            super.getCode(), super.getDescription(), getPlatPrice(), super.getIngredients());
     }
 }

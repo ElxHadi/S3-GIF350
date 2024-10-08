@@ -10,17 +10,24 @@ import lombok.*;
 @Getter
 @Setter
 public class Bill {
-    private LocalDateTime date = LocalDateTime.now();
-    private BillState state = BillState.CLOSED;
-    private Client client = new Client(0, "");
-    private HashMap<Plat, Integer> plats = new HashMap<>();
+    private LocalDateTime date;
+    private BillState state;
+    private Client client;
+    private HashMap<Plat, Integer> plats;
 
     public Bill() {
+        date = LocalDateTime.now();
+        state = BillState.CLOSED;
+        client = new Client(0, "");
+        plats = new HashMap<>();
+    }
+
+    public Bill(Client client) {
+        this.client = client;
         this.date = LocalDateTime.now();
         this.state = BillState.CLOSED;
-        this.client = new Client(); // Default Client
-        this.plats = new HashMap<>(); // Initialize the HashMap
-    }    
+        this.plats = new HashMap<>();
+    }
 
     public void addPlat(Plat plat, int quantity) {
         if (plat == null) {
@@ -69,17 +76,9 @@ public class Bill {
 
     @Override
     public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        StringBuilder platsDescription = new StringBuilder();
-        for (HashMap.Entry<Plat, Integer> entry : plats.entrySet()) {
-            platsDescription.append("\t\t").append(entry.getKey().getDescription()).append(": ")
-                    .append(entry.getValue()).append(" @ ").append(entry.getKey().getPlatPrice())
-                    .append(" each\n");
-        }
-
-        return "Bill {\n" + "\tDate: " + date.format(formatter) + "\n" + "\tState: " + state + "\n"
-                + "\tClient: " + client + "\n" + "\tPlats: \n" + platsDescription.toString()
-                + "\tTotal: $" + getTotal() + "\n" + '}';
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return String.format("Bill { Date: %s, State: %s, Client: %s, Total: %.2f }",
+                date.format(formatter), state, client.toString(), getTotal());
     }
 
 }

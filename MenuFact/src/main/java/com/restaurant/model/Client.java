@@ -5,18 +5,14 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
 public class Client {
     private int idClient;
     private String name;
 
-    public Client() {
-        this.idClient = 0;
-        this.name = "";
-    }
-
     @Override
     public String toString() {
-        return "Client {" + "ID: " + idClient + ", Name: '" + name + '\'' + '}';
+        return String.format("Client { idClient: '%s', name: '%s' }", getIdClient(), getName());
     }
 
 }
