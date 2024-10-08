@@ -1,7 +1,9 @@
 // KidsPlat.java
-package com.restaurant.model;
+package com.restaurant.model.builder;
 
 import java.util.HashMap;
+import com.restaurant.model.factory.Ingredient;
+import com.restaurant.model.state.BillingStrategy;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,8 +13,8 @@ public class KidsPlat extends Plat {
     private double proportion;
 
     public KidsPlat(int code, String description, HashMap<Ingredient, Double> ingredients,
-            double proportion) {
-        super(code, description, ingredients);
+            double proportion, BillingStrategy billingStrategy) {
+        super(code, description, ingredients, billingStrategy);
         this.proportion = proportion;
     }
 

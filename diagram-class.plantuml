@@ -1,11 +1,17 @@
 @startuml
 
-skinparam classAttributeIconSize 0
-skinparam classFontSize 14
-skinparam classFontColor black
-skinparam classBackgroundColor #ffffff
-skinparam classBorderColor black
-skinparam lineThickness 2
+skinparam linetype ortho
+
+skinparam class {
+    BackgroundColor<<Factory>> #6b5b95
+    BackgroundColor<<Builder>> #86af49
+    BackgroundColor<<Singleton>> #d64161
+    BackgroundColor<<State>> #ff7b25
+    BackgroundColor<<Observer>> #a2b9bc
+    BorderColor black
+    ArrowColor black
+    ClassFontColor black
+}
 
 package "com.restaurant.controller" {
     class MenuFactController {
@@ -40,19 +46,32 @@ package "com.restaurant.util" {
 }
 
 package "com.restaurant.model" {
-    interface BillState {
+
+    class Inventory <<Singleton>> {
+    - instance : static Inventory
+    - stock : HashMap<Ingredient, Double>
+
+    + Inventory()
+    + getInstance() : static Inventory
+    + addIngredient(Ingredient ingredient, double quantity) : void
+    + removeIngredient(Ingredient ingredient, double quantity) : void
+    + checkAvailability(Ingredient ingredient, double quantity) : boolean
+    + toString() : String @Override
+    }
+
+    interface BillState <<State>>{
         + handle(context: BillContext): void
     }
 
-    class BillOpenState implements BillState {
+    class BillOpenState <<State>> implements BillState{
         + handle(context: BillContext): void
     }
 
-    class BillClosedState implements BillState {
+    class BillClosedState <<State>> implements BillState{
         + handle(context: BillContext): void
     }
 
-    class BillPayedState implements BillState {
+    class BillPayedState <<State>> implements BillState{
         + handle(context: BillContext): void
     }
 
@@ -121,7 +140,7 @@ package "com.restaurant.model" {
         + toString(): String
     }
 
-    class BillContext {
+    class BillContext <<State>> {
         - currentState: BillState
         + BillContext(initialState: BillState)
         + getCurrentState(): BillState
@@ -140,7 +159,7 @@ package "com.restaurant.model" {
         + toString(): String
     }
 
-    class PlatBuilder {
+    class PlatBuilder <<Builder>> {
         - type: PlatType
         - code: int
         - description: String
@@ -154,21 +173,21 @@ package "com.restaurant.model" {
         + build(): Plat
     }
 
-    class IngredientFactory {
+    class IngredientFactory <<Factory>>{
         + createIngredient(code: int, name: String, type: IngredientType, pricePerUnit: double, unit: IngredientUnit): Ingredient
     }
 
-    interface Observer {
+    interface Observer <<Observer>> {
         + update(plat: Plat): void
     }
 
-    interface Subject {
+    interface Subject <<Observer>> {
         + registerObserver(observer: Observer): void
         + removeObserver(observer: Observer): void
         + notifyObservers(plat: Plat): void
     }
 
-    class Chef implements Observer{
+    class Chef <<Observer>> implements Observer{
         - name: String
         + getName(): String
         + setName(name: String): void
@@ -192,15 +211,17 @@ MenuFactView "1" -- "*" Bill : "displays"
 Menu "1" o-- "0..*" Plat
 Bill "1" o-- "0..*" Plat
 Bill "1" o-- "1" Client
-Bill "1" o-- "*" BillContext
+Bill "1" *-- "*" BillContext
 KidsPlat --|> Plat
 HealthyPlat --|> Plat
 Bill -- BillState : "has"
 PlatBuilder "1" --> "*" Plat : "builds"
 PlatBuilder -- PlatType : "uses"
+PlatBuilder "1" -- "*" Inventory : "checks"
 IngredientFactory "1" --> "*" Ingredient : "makes"
 IngredientFactory  --  IngredientType : "uses"
 IngredientFactory  --  IngredientUnit: "uses"
 Plat "1..*" o-- "0..*" Ingredient
+Inventory "1" *-- "0..*" Ingredient
 
 @enduml

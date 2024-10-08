@@ -1,8 +1,9 @@
 // Inventory.java
-package com.restaurant.model;
+package com.restaurant.model.singleton;
 
 import java.util.HashMap;
-import com.restaurant.exception.InsufficientStockException;
+import com.restaurant.model.factory.Ingredient;
+import com.restaurant.util.InsufficientStockException;
 
 public class Inventory {
     private static Inventory instance;

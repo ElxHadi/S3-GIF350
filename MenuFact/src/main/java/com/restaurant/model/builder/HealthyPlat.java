@@ -1,7 +1,9 @@
 // HealthyPlat.java
-package com.restaurant.model;
+package com.restaurant.model.builder;
 
 import java.util.HashMap;
+import com.restaurant.model.factory.Ingredient;
+import com.restaurant.model.state.BillingStrategy;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,8 +15,8 @@ public class HealthyPlat extends Plat {
     private double fat;
 
     public HealthyPlat(int code, String description, HashMap<Ingredient, Double> ingredients,
-            double calories, double cholesterol, double fat) {
-        super(code, description, ingredients);
+            double calories, double cholesterol, double fat, BillingStrategy billingStrategy) {
+        super(code, description, ingredients, billingStrategy);
         this.calories = calories;
         this.cholesterol = cholesterol;
         this.fat = fat;

@@ -1,5 +1,6 @@
-package com.restaurant.model;
+package com.restaurant.model.observer;
 
+import com.restaurant.model.builder.Plat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

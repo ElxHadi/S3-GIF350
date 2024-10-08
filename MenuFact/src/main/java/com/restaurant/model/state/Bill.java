@@ -1,10 +1,15 @@
-package com.restaurant.model;
+package com.restaurant.model.state;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import com.restaurant.model.Client;
+import com.restaurant.model.builder.Plat;
+import com.restaurant.model.observer.Observer;
+import com.restaurant.model.observer.Subject;
 import lombok.*;
 
 @AllArgsConstructor
@@ -74,11 +79,19 @@ public class Bill implements Subject {
             }
         }
     }
-
-    public double getTotal() {
+    public double getTotalBeforeTaxes() {
         double total = 0;
         for (HashMap.Entry<Plat, Integer> entry : plats.entrySet()) {
             total += entry.getKey().getPlatPrice() * entry.getValue();
+        }
+        return total;
+    }
+
+     public double getTotal() {
+        double total = 0.0;
+        for (Map.Entry<Plat, Integer> entry : plats.entrySet()) {
+            Plat plat = entry.getKey();
+            total += plat.calculateTaxExemptedPrice(this) * entry.getValue();
         }
         return total;
     }

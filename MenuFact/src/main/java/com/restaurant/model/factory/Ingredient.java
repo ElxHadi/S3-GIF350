@@ -1,5 +1,5 @@
 // Ingredient.java
-package com.restaurant.model;
+package com.restaurant.model.factory;
 
 import com.restaurant.util.IngredientType;
 import com.restaurant.util.IngredientUnit;

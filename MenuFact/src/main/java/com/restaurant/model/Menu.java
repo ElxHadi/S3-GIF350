@@ -2,6 +2,7 @@ package com.restaurant.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.restaurant.model.builder.Plat;
 import lombok.Getter;
 import lombok.Setter;
 

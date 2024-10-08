@@ -1,9 +1,9 @@
 // MenuFactController.java
 package com.restaurant.controller;
 
-import com.restaurant.model.Bill;
 import com.restaurant.model.Client;
 import com.restaurant.model.Menu;
+import com.restaurant.model.state.Bill;
 import com.restaurant.view.MenuFactView;
 
 public class MenuFactController {

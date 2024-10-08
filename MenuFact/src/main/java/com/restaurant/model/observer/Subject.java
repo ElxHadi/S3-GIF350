@@ -1,4 +1,6 @@
-package com.restaurant.model;
+package com.restaurant.model.observer;
+
+import com.restaurant.model.builder.Plat;
 
 public interface Subject {
     void registerObserver(Observer observer);

@@ -1,4 +1,4 @@
-package com.restaurant.model;
+package com.restaurant.model.state;
 
 public class BillClosedState implements BillState {
     @Override

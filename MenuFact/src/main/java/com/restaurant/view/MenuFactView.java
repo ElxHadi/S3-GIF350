@@ -1,9 +1,9 @@
 // MenuFactView.java
 package com.restaurant.view;
 
-import com.restaurant.model.Bill;
 import com.restaurant.model.Menu;
-import com.restaurant.model.Plat;
+import com.restaurant.model.builder.Plat;
+import com.restaurant.model.state.Bill;
 
 public class MenuFactView {
 

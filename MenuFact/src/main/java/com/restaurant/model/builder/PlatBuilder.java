@@ -1,7 +1,10 @@
 // PlatBuilder.java
-package com.restaurant.model;
+package com.restaurant.model.builder;
 
-import com.restaurant.exception.InsufficientStockException;
+import com.restaurant.model.factory.Ingredient;
+import com.restaurant.model.singleton.Inventory;
+import com.restaurant.model.state.BillingStrategy;
+import com.restaurant.util.InsufficientStockException;
 import com.restaurant.util.PlatType;
 import java.util.HashMap;
 
@@ -11,9 +14,16 @@ public class PlatBuilder {
     private String description;
     private HashMap<Ingredient, Double> ingredients = new HashMap<>();
     private double[] extraParams;
+    private BillingStrategy billingStrategy;
 
     public PlatBuilder(PlatType type) {
         this.type = type;
+        this.ingredients = new HashMap<>();
+    }
+
+    public PlatBuilder setBillingStrategy(BillingStrategy billingStrategy) {
+        this.billingStrategy = billingStrategy;
+        return this;
     }
 
     public PlatBuilder setCode(int code) {
@@ -31,7 +41,8 @@ public class PlatBuilder {
 
         // Check availability in inventory
         if (!inventory.checkAvailability(ingredient, quantity)) {
-            throw new InsufficientStockException("Not enough stock for ingredient: " + ingredient.getName());
+            throw new InsufficientStockException(
+                    "Not enough stock for ingredient: " + ingredient.getName());
         }
 
         // Add the ingredient to the plat
@@ -51,19 +62,20 @@ public class PlatBuilder {
         switch (type) {
             case KIDS:
                 if (extraParams.length >= 1) {
-                    return new KidsPlat(code, description, ingredients, extraParams[0]);
+                    return new KidsPlat(code, description, ingredients, extraParams[0],
+                            billingStrategy);
                 } else {
                     throw new IllegalArgumentException("Missing parameters for KidsPlat");
                 }
             case HEALTHY:
                 if (extraParams.length >= 3) {
                     return new HealthyPlat(code, description, ingredients, extraParams[0],
-                            extraParams[1], extraParams[2]);
+                            extraParams[1], extraParams[2], billingStrategy);
                 } else {
                     throw new IllegalArgumentException("Missing parameters for HealthyPlat");
                 }
             default:
-                return new Plat(code, description, ingredients);
+                return new Plat(code, description, ingredients, billingStrategy);
         }
     }
 }
