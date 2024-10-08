@@ -1,24 +1,26 @@
 @startuml
 
+skinparam classAttributeIconSize 0
+skinparam classFontSize 14
+skinparam classFontColor black
+skinparam classBackgroundColor #ffffff
+skinparam classBorderColor black
+skinparam lineThickness 2
+
 package "com.restaurant.controller" {
     class MenuFactController {
-        -MenuFactView view
-        -Menu menu
-        -Bill bill
-        +MenuFactController(Menu, Bill, MenuFactView)
-        +displayWelcomeMessage()
-        +displayMenu()
-        +displayBill()
-        +run()
+        - view: MenuFactView
+        - menu: Menu
+        - bill: Bill
+        + MenuFactController(menu: Menu, bill: Bill, view: MenuFactView)
+        + displayWelcomeMessage(): void
+        + displayMenu(): void
+        + displayBill(): void
+        + run(): void
     }
 }
 
 package "com.restaurant.util" {
-    enum BillState {
-        OPEN
-        CLOSED
-        PAYED
-    }
     enum IngredientType {
         SOLID
         LIQUID
@@ -38,107 +40,148 @@ package "com.restaurant.util" {
 }
 
 package "com.restaurant.model" {
+    interface BillState {
+        + handle(context: BillContext): void
+    }
+
+    class BillOpenState implements BillState {
+        + handle(context: BillContext): void
+    }
+
+    class BillClosedState implements BillState {
+        + handle(context: BillContext): void
+    }
+
+    class BillPayedState implements BillState {
+        + handle(context: BillContext): void
+    }
+
     class Client {
-        -int idClient
-        -String name
-        +Client()
-        +Client(int, String)
-        +toString()
+        - idClient: int
+        - name: String
+        + Client()
+        + Client(idClient: int, name: String)
+        + toString(): String
     }
 
     class Ingredient {
-        -int code
-        -String name
-        -IngredientType type
-        -double pricePerUnit
-        -IngredientUnit unit
-        +Ingredient()
-        +Ingredient(int, String, IngredientType, double, IngredientUnit)
-        +toString()
+        - code: int
+        - name: String
+        - type: IngredientType
+        - pricePerUnit: double
+        - unit: IngredientUnit
+        + Ingredient()
+        + Ingredient(code: int, name: String, type: IngredientType, pricePerUnit: double, unit: IngredientUnit)
+        + toString(): String
     }
 
     class Plat {
-        -int code
-        -String description
-        -HashMap<Ingredient, Double> ingredients
-        +Plat()
-        +Plat(int, String, HashMap<Ingredient, Double>)
-        +addIngredient(Ingredient, double)
-        +removeIngredient(Ingredient)
-        +updateIngredientQuantity(Ingredient, double)
-        +getPlatPrice()
-        +listIngredients()
-        +toString()
+        - code: int
+        - description: String
+        - ingredients: HashMap<Ingredient, Double>
+        + Plat()
+        + Plat(code: int, description: String, ingredients: HashMap<Ingredient, Double>)
+        + addIngredient(ingredient: Ingredient, quantity: double): void
+        + removeIngredient(ingredient: Ingredient): void
+        + updateIngredientQuantity(ingredient: Ingredient, quantity: double): void
+        + getPlatPrice(): double
+        + listIngredients(): List<Ingredient>
+        + toString(): String
     }
 
     class KidsPlat {
-        -double proportion
-        +KidsPlat(int, String, HashMap<Ingredient, Double>, double)
-        +getPlatPrice()
-        +toString()
+        - proportion: double
+        + KidsPlat(code: int, description: String, ingredients: HashMap<Ingredient, Double>, proportion: double)
+        + getPlatPrice(): double
+        + toString(): String
     }
 
     class HealthyPlat {
-        -double calories
-        -double cholesterol
-        -double fat
-        +HealthyPlat(int, String, HashMap<Ingredient, Double>, double, double, double)
-        +toString()
+        - calories: double
+        - cholesterol: double
+        - fat: double
+        + HealthyPlat(code: int, description: String, ingredients: HashMap<Ingredient, Double>, calories: double, cholesterol: double, fat: double)
+        + toString(): String
     }
 
-    class Bill {
-        -LocalDateTime date
-        -BillState state
-        -Client client
-        -HashMap<Plat, Integer> plats
-        +Bill()
-        +Bill(LocalDateTime, BillState, Client, HashMap<Plat, Integer>)
-        +addPlat(Plat, int)
-        +removePlat(int)
-        +modifyBill(int, int)
-        +getTotal()
-        +close()
-        +pay()
-        +reopen()
-        +toString()
+    class Bill implements Subject {
+        - date: LocalDateTime
+        - billContext: BillContext
+        - client: Client
+        - plats: HashMap<Plat, Integer>
+        + Bill()
+        + Bill(date: LocalDateTime, billContext: BillContext, client: Client, plats: HashMap<Plat, Integer>)
+        + addPlat(plat: Plat, quantity: int): void
+        + removePlat(platCode: int): void
+        + modifyBill(platCode: int, quantity: int): void
+        + getTotal(): double
+        + close(): void
+        + pay(): void
+        + reopen(): void
+        + toString(): String
+    }
+
+    class BillContext {
+        - currentState: BillState
+        + BillContext(initialState: BillState)
+        + getCurrentState(): BillState
+        + setState(newState: BillState): void
+        + request(): void
     }
 
     class Menu {
-        -String description
-        -List<Plat> plats
-        +Menu()
-        +Menu(String, List<Plat>)
-        +removePlat(Plat)
-        +addPlat(Plat)
-        +getPlatByCode(int)
-        +toString()
+        - description: String
+        - plats: List<Plat>
+        + Menu()
+        + Menu(description: String, plats: List<Plat>)
+        + removePlat(plat: Plat): void
+        + addPlat(plat: Plat): void
+        + getPlatByCode(code: int): Plat
+        + toString(): String
     }
 
     class PlatBuilder {
-        -PlatType type
-        -int code
-        -String description
-        -HashMap<Ingredient, Double> ingredients
-        -double[] extraParams
-        +PlatBuilder(PlatType)
-        +setCode(int)
-        +setDescription(String)
-        +addIngredient(Ingredient, double)
-        +setExtraParams(double...)
-        +build()
+        - type: PlatType
+        - code: int
+        - description: String
+        - ingredients: HashMap<Ingredient, Double>
+        - extraParams: double[]
+        + PlatBuilder(type: PlatType)
+        + setCode(code: int): PlatBuilder
+        + setDescription(description: String): PlatBuilder
+        + addIngredient(ingredient: Ingredient, quantity: double): PlatBuilder
+        + setExtraParams(params: double...): PlatBuilder
+        + build(): Plat
     }
 
     class IngredientFactory {
-        +createIngredient(int, String, IngredientType, double, IngredientUnit): Ingredient
+        + createIngredient(code: int, name: String, type: IngredientType, pricePerUnit: double, unit: IngredientUnit): Ingredient
+    }
+
+    interface Observer {
+        + update(plat: Plat): void
+    }
+
+    interface Subject {
+        + registerObserver(observer: Observer): void
+        + removeObserver(observer: Observer): void
+        + notifyObservers(plat: Plat): void
+    }
+
+    class Chef implements Observer{
+        - name: String
+        + getName(): String
+        + setName(name: String): void
+        + update(plat: Plat): void @Override
     }
 }
 
 package "com.restaurant.view" {
     class MenuFactView {
-        -String wlcMessage
-        +displayMenu(Menu)
-        +displayBill(Bill)
-        +showWelcomeMessage()
+        - wlcMessage: String
+        + displayMenu(menu: Menu): void
+        + displayBill(bill: Bill): void
+        + showWelcomeMessage(): void
     }
 }
 
@@ -146,16 +189,18 @@ package "com.restaurant.view" {
 MenuFactController "1" -- "1" MenuFactView : "controls"
 MenuFactView "1" -- "*" Menu : "displays"
 MenuFactView "1" -- "*" Bill : "displays"
-Menu "1" o-- "0..*" Plat : "contains"
-Bill "1" o-- "0..*" Plat : "contains"
-Bill "1" o-- "1" Client : "belongs to"
+Menu "1" o-- "0..*" Plat
+Bill "1" o-- "0..*" Plat
+Bill "1" o-- "1" Client
+Bill "1" o-- "*" BillContext
 KidsPlat --|> Plat
 HealthyPlat --|> Plat
 Bill -- BillState : "has"
-PlatBuilder "1"--> "*"Plat : "builds"
-IngredientFactory "1"--> "*" Ingredient: "makes"
-Plat -- PlatType : has
+PlatBuilder "1" --> "*" Plat : "builds"
+PlatBuilder -- PlatType : "uses"
+IngredientFactory "1" --> "*" Ingredient : "makes"
+IngredientFactory  --  IngredientType : "uses"
+IngredientFactory  --  IngredientUnit: "uses"
 Plat "1..*" o-- "0..*" Ingredient
-Ingredient -- IngredientType : has
-Ingredient -- IngredientUnit : has
+
 @enduml

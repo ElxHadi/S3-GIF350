@@ -2,31 +2,36 @@ package com.restaurant.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
-import com.restaurant.util.BillState;
+import java.util.List;
 import lombok.*;
 
 @AllArgsConstructor
 @Getter
 @Setter
-public class Bill {
+public class Bill implements Subject {
     private LocalDateTime date;
-    private BillState state;
     private Client client;
     private HashMap<Plat, Integer> plats;
+    private BillContext context;
+    private List<Observer> observers;
+
 
     public Bill() {
         date = LocalDateTime.now();
-        state = BillState.CLOSED;
+        this.context = new BillContext(new BillOpenState());
         client = new Client(0, "");
         plats = new HashMap<>();
+        this.observers = new ArrayList<>();
     }
 
     public Bill(Client client) {
         this.client = client;
         this.date = LocalDateTime.now();
-        this.state = BillState.CLOSED;
+        this.context = new BillContext(new BillOpenState());
         this.plats = new HashMap<>();
+        this.observers = new ArrayList<>();
     }
 
     public void addPlat(Plat plat, int quantity) {
@@ -34,6 +39,24 @@ public class Bill {
             return;
         }
         plats.put(plat, quantity);
+        notifyObservers(plat);
+    }
+
+    @Override
+    public void registerObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public synchronized void notifyObservers(Plat plat) {
+        for (Observer observer : observers) {
+            observer.update(plat);
+        }
     }
 
     public void removePlat(int code) {
@@ -61,16 +84,16 @@ public class Bill {
     }
 
     public void close() {
-        state = BillState.CLOSED;
+        context.request();
     }
 
     public void pay() {
-        state = BillState.PAYED;
+        context.request();
     }
 
     public void reopen() {
-        if (state == BillState.CLOSED) {
-            state = BillState.OPEN;
+        if (context.getCurrentState() instanceof BillClosedState) {
+            ((BillClosedState) context.getCurrentState()).reopen(context);
         }
     }
 
@@ -78,7 +101,8 @@ public class Bill {
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return String.format("Bill { Date: %s, State: %s, Client: %s, Total: %.2f }",
-                date.format(formatter), state, client.toString(), getTotal());
+                date.format(formatter), context.getCurrentState().getClass().getSimpleName(),
+                client.toString(), getTotal());
     }
 
 }
