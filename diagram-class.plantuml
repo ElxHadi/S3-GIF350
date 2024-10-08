@@ -1,127 +1,145 @@
-@startuml menuFact
+@startuml
 
-skinparam class {
-    BackgroundColor<<MVC>> LightBlue
-    BackgroundColor<<Factory>> LightGreen
-    BorderColor black
-    ArrowColor black
-    ClassFontColor black
+package "com.restaurant.controller" {
+    class MenuFactController {
+        -MenuFactView view
+        -Menu menu
+        -Bill bill
+        +MenuFactController(Menu, Bill, MenuFactView)
+        +displayWelcomeMessage()
+        +displayMenu()
+        +displayBill()
+        +run()
+    }
 }
 
-' // Controller Class (MVC)
-class MenuFactController <<MVC>> {
-    - menu : Menu
-    - bill : Bill
-    - view : MenuFactView
-    - inventory : Inventory
-    + MenuFactController(menu : Menu, bill : Bill, view : MenuFactView, inventory : Inventory)
-    + displayWelcomeMessage() : void
-    + displayMenu() : void
-    + displayBill() : void
-    + run() : void
+package "com.restaurant.util" {
+    enum BillState {
+        OPEN
+        CLOSED
+        PAYED
+    }
+    enum IngredientType {
+        SOLID
+        LIQUID
+    }
+    enum PlatType {
+        REGULAR
+        KIDS
+        HEALTHY
+    }
+    enum IngredientUnit {
+        KG
+        G
+        MG
+        L
+        ML
+    }
 }
 
-' // View Class (MVC)
-class MenuFactView <<MVC>> {
-    + displayMenu(menu : Menu) : void
-    + displayBill(bill : Bill) : void
-    + showWelcomeMessage() : void
+package "com.restaurant.model" {
+    class Client {
+        -int idClient
+        -String name
+        +Client()
+        +Client(int, String)
+        +toString()
+    }
+
+    class Ingredient {
+        -int code
+        -String name
+        -IngredientType type
+        -double pricePerUnit
+        -IngredientUnit unit
+        +Ingredient()
+        +Ingredient(int, String, IngredientType, double, IngredientUnit)
+        +toString()
+    }
+
+    class Plat {
+        -int code
+        -String description
+        -HashMap<Ingredient, Double> ingredients
+        +Plat()
+        +Plat(int, String, HashMap<Ingredient, Double>)
+        +addIngredient(Ingredient, double)
+        +removeIngredient(Ingredient)
+        +updateIngredientQuantity(Ingredient, double)
+        +getPlatPrice()
+        +listIngredients()
+        +toString()
+    }
+
+    class KidsPlat {
+        -double proportion
+        +KidsPlat(int, String, HashMap<Ingredient, Double>, double)
+        +getPlatPrice()
+        +toString()
+    }
+
+    class HealthyPlat {
+        -double calories
+        -double cholesterol
+        -double fat
+        +HealthyPlat(int, String, HashMap<Ingredient, Double>, double, double, double)
+        +toString()
+    }
+
+    class Bill {
+        -LocalDateTime date
+        -BillState state
+        -Client client
+        -HashMap<Plat, Integer> plats
+        +Bill()
+        +Bill(LocalDateTime, BillState, Client, HashMap<Plat, Integer>)
+        +addPlat(Plat, int)
+        +removePlat(int)
+        +modifyBill(int, int)
+        +getTotal()
+        +close()
+        +pay()
+        +reopen()
+        +toString()
+    }
+
+    class Menu {
+        -String description
+        -List<Plat> plats
+        +Menu()
+        +Menu(String, List<Plat>)
+        +removePlat(Plat)
+        +addPlat(Plat)
+        +getPlatByCode(int)
+        +toString()
+    }
+
+    class PlatBuilder {
+        -PlatType type
+        -int code
+        -String description
+        -HashMap<Ingredient, Double> ingredients
+        -double[] extraParams
+        +PlatBuilder(PlatType)
+        +setCode(int)
+        +setDescription(String)
+        +addIngredient(Ingredient, double)
+        +setExtraParams(double...)
+        +build()
+    }
+
+    class IngredientFactory {
+        +createIngredient(int, String, IngredientType, double, IngredientUnit): Ingredient
+    }
 }
 
-' // Models
-class Menu {
-    - description : String
-    - plats : List<Plat>
-    + addPlat(plat : Plat) : void
-    + removePlat(plat : Plat) : void
-    + getPlatByCode(code : int) : Plat
-}
-
-class Bill {
-    - LocalDateTime date : LocalDateTime
-    - BillState state : BillState
-    - Client client : Client
-    - platQuantities : Map<Plat, Integer>
-    + addPlat(plat : Plat, quantity : int) : void
-    + removePlat(plat : Plat) : void
-    + modifyBill(plat : Plat, quantity : int) : void
-    + getTotal() : double
-}
-
-class Plat {
-    - code : int
-    - description : String
-    - ingredients : Map<Ingredient, Double>
-    + getCode() : int
-    + getDescription() : String
-    + getIngredients() : Map<Ingredient, Double>
-    + getPlatPrice() : double
-}
-
-class KidsPlat {
-    - proportion : double
-    + KidsPlat(code : int, description : String, proportion : double) 
-    + getPlatPrice() : double @Override
-}
-
-class HealthyPlat {
-    - calories : double
-    - cholesterol : double
-    - fat : double
-    + HealthyPlat(code : int, description : String, calories : double, cholesterol : double, fat : double)
-}
-
-class Client {
-    - id : int
-    - name : String
-    + Client(id : int, name : String)
-}
-
-class Ingredient {
-    - code : int
-    - name : String
-    - type : IngredientType
-    - pricePerUnit : double
-    - unit : IngredientUnit
-}
-
-class Inventory {
-    - availableIngredients : Map<Ingredient, Integer>
-    + addIngredient(ingredient : Ingredient, quantity : int) : void
-    + removeIngredient(ingredient : Ingredient, quantity : int) : void
-    + modifyIngredientQuantity(ingredient : Ingredient, quantity : int) : void
-    + getAvailableQuantity(ingredient : Ingredient) : int
-    + getIngredientsList() : Map<Ingredient, Integer>
-}
-
-enum IngredientType {
-    SOLID,
-    LIQUID
-}
-
-enum IngredientUnit {
-    KG,
-    G,
-    MG,
-    L,
-    ML
-}
-
-enum BillState {
-    OPEN,
-    CLOSED,
-    PAID
-}
-
-' // Factory Pattern (Factory)
-class PlatFactory <<Factory>> {
-    + createPlat(platType : PlatType, code : int, description : String, additionalParams : double...) : Plat
-}
-
-enum PlatType {
-    REGULAR,
-    KIDS,
-    HEALTHY
+package "com.restaurant.view" {
+    class MenuFactView {
+        -String wlcMessage
+        +displayMenu(Menu)
+        +displayBill(Bill)
+        +showWelcomeMessage()
+    }
 }
 
 ' Associations and cardinalities
@@ -131,12 +149,13 @@ MenuFactView "1" -- "*" Bill : "displays"
 Menu "1" o-- "0..*" Plat : "contains"
 Bill "1" o-- "0..*" Plat : "contains"
 Bill "1" o-- "1" Client : "belongs to"
-PlatFactory "1" --> "1" Plat : "creates"
-PlatFactory ..> PlatType : "uses"
 KidsPlat --|> Plat
 HealthyPlat --|> Plat
 Bill -- BillState : "has"
-Inventory "1" -- "0..*" Ingredient : "contains"
-Plat "1..*" o-- "0..*" Ingredient : "uses"
-
+PlatBuilder "1"--> "*"Plat : "builds"
+IngredientFactory "1"--> "*" Ingredient: "makes"
+Plat -- PlatType : has
+Plat "1..*" o-- "0..*" Ingredient
+Ingredient -- IngredientType : has
+Ingredient -- IngredientUnit : has
 @enduml
