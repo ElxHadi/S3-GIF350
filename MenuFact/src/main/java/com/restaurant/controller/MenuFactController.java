@@ -1,4 +1,4 @@
-// MenuFactController.java
+
 package com.restaurant.controller;
 
 import com.restaurant.model.Client;
@@ -28,11 +28,11 @@ public class MenuFactController {
     }
 
     public void displayMenu() {
-        view.displayMenu(menu); // Pass the model to the view
+        view.displayMenu(menu);
     }
 
     public void displayBill() {
-        view.displayBill(bill); // Pass the model to the view
+        view.displayBill(bill);
     }
 
     public void run() {

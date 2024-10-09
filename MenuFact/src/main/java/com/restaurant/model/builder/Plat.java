@@ -49,7 +49,6 @@ public class Plat {
         return billingStrategy != null ? billingStrategy.calculateTotal(bill) : getPlatPrice();
     }
 
-    // Method to calculate total ingredient cost
     public double getPlatPrice() {
         double platPrice = 0.0;
         for (Map.Entry<Ingredient, Double> entry : ingredients.entrySet()) {
@@ -58,7 +57,6 @@ public class Plat {
         return platPrice;
     }
 
-    // Method to list all ingredients
     public void listIngredients() {
         System.out.println("Ingredients for " + description + ":");
         for (Map.Entry<Ingredient, Double> entry : ingredients.entrySet()) {

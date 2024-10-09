@@ -39,15 +39,12 @@ public class PlatBuilder {
     public PlatBuilder addIngredient(Ingredient ingredient, double quantity) {
         Inventory inventory = Inventory.getInstance();
 
-        // Check availability in inventory
         if (!inventory.checkAvailability(ingredient, quantity)) {
             throw new InsufficientStockException(
                     "Not enough stock for ingredient: " + ingredient.getName());
         }
 
-        // Add the ingredient to the plat
         this.ingredients.put(ingredient, quantity);
-        // Update the inventory by reducing the stock
         inventory.removeIngredient(ingredient, quantity);
 
         return this;

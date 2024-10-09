@@ -35,7 +35,9 @@ public class Inventory {
     }
 
     public boolean checkAvailability(Ingredient ingredient, double quantity) {
-        return stock.getOrDefault(ingredient, 0.0) >= quantity;
+        double availableQuantity = stock.getOrDefault(ingredient, 0.0);
+    
+        return availableQuantity >= quantity;
     }
 
     @Override

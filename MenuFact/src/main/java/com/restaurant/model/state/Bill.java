@@ -18,6 +18,8 @@ import lombok.*;
 public class Bill implements Subject {
     private LocalDateTime date;
     private Client client;
+    
+    //
     private HashMap<Plat, Integer> plats;
     private BillContext context;
     private List<Observer> observers;
@@ -117,5 +119,4 @@ public class Bill implements Subject {
                 date.format(formatter), context.getCurrentState().getClass().getSimpleName(),
                 client.toString(), getTotal());
     }
-
 }

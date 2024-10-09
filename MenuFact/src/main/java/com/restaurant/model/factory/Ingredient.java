@@ -1,21 +1,21 @@
-// Ingredient.java
+
 package com.restaurant.model.factory;
 
 import com.restaurant.util.IngredientType;
 import com.restaurant.util.IngredientUnit;
 import lombok.*;
 
-// Lombok annotations can remain for other purposes, such as getters and setters.
+
 @Getter
 @Setter
 public class Ingredient {
     private int code;
     private String name;
-    private IngredientType type; // Enum for solid/liquid
+    private IngredientType type; 
     private double pricePerUnit;
-    private IngredientUnit unit; // Enum for kg, g, mg, L, ml
+    private IngredientUnit unit; 
 
-    // Private constructor to restrict instantiation
+    
     public Ingredient(int code, String name, IngredientType type, double pricePerUnit, IngredientUnit unit) {
         this.code = code;
         this.name = name;
